@@ -1,0 +1,25 @@
+# Client-side dependencies only. The serving stack (vLLM, xgrammar, guidance)
+# is installed on the GPU host and is not pinned here; see README.md.
+#
+# Floors rather than hard pins, so this installs on the Python you have.
+# The exact versions the published measurements ran on are listed below --
+# reproduce against those if you are checking the numbers rather than the code.
+
+httpx>=0.27              # async concurrency ramp
+jsonschema>=4.18         # schema validation rung
+matplotlib>=3.7          # figures only; not needed to run experiments
+
+# As-run versions (client host):
+#   Python 3.12.3, httpx 0.27.2, jsonschema 4.26.0, matplotlib 3.9.2
+#
+# jsonschema 4.26.0 requires Python >= 3.10; on 3.9 pip resolves to 4.25.1.
+# That matters for one thing only: truncation_experiment.py's correctness rates
+# are version-independent (they reproduced to four decimal places across
+# jsonschema 4.26.0 / Python 3.12.3 and jsonschema 3.2.0 / Python 3.10.12),
+# but its validation-ladder TIMINGS are not. Report your versions with them;
+# the script prints its own in the ladder header.
+#
+# Minimal installs:
+#   truncation_experiment.py  -> jsonschema only
+#   cost_of_failure.py        -> standard library only
+#   plot_figures.py           -> matplotlib only
