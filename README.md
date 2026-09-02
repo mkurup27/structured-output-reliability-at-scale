@@ -10,8 +10,6 @@
 
 This repository is the evidence base for a companion article, *"Structured Output Reliability at Scale: When JSON Schema Validity Breaks Down Under Concurrency"* (DigitalOcean Community, forthcoming).
 
-> **Read this first.** Two caveats. `plot_figures.py` carries transcribed values instead of reading `results/`, so where a figure and a table disagree, the table is authoritative. And `scrape_metrics.py`, a standalone `/metrics` poller described in earlier drafts, was folded into the ramp harness as `--metrics-url` and no longer exists separately.
-
 ---
 
 ## Abstract
