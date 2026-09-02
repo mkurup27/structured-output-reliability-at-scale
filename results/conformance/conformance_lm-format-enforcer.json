@@ -1,0 +1,243 @@
+{
+  "provenance": {
+    "backend_label": "lm-format-enforcer",
+    "python": "3.10.12",
+    "platform": "Linux-5.15.0-187-generic-x86_64-with-glibc2.35",
+    "utc": "2026-08-19T05:53:26.053175+00:00",
+    "vllm": "0.27.1",
+    "xgrammar": "0.2.3",
+    "outlines_core": "0.2.14",
+    "llguidance": "1.7.6",
+    "lm-format-enforcer": "0.11.3",
+    "torch": "2.13.0",
+    "transformers": "5.15.0",
+    "server_version": "{\"version\":\"0.27.1\"}"
+  },
+  "config": {
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "backend_label": "lm-format-enforcer",
+    "trials": 5,
+    "max_tokens": 256,
+    "temperature": 1.0,
+    "out": "conformance_lm-format-enforcer.json"
+  },
+  "cases": [
+    {
+      "id": "pattern",
+      "note": "regex pattern on a string",
+      "verdict": "REJECTED",
+      "tally": {
+        "REJECTED": 5
+      },
+      "completed_trials": 0,
+      "truncation_rate": 0.0,
+      "example_note": "HTTP 500: {\"error\":{\"message\":\"Internal server error\",\"type\":\"InternalServerError\",\"param\":null,\"code\":500}}",
+      "specimens": []
+    },
+    {
+      "id": "minLength",
+      "note": "minLength on a string",
+      "verdict": "REJECTED",
+      "tally": {
+        "REJECTED": 5
+      },
+      "completed_trials": 0,
+      "truncation_rate": 0.0,
+      "example_note": "HTTP 500: {\"error\":{\"message\":\"Internal server error\",\"type\":\"InternalServerError\",\"param\":null,\"code\":500}}",
+      "specimens": []
+    },
+    {
+      "id": "maxLength",
+      "note": "maxLength on a string",
+      "verdict": "REJECTED",
+      "tally": {
+        "REJECTED": 5
+      },
+      "completed_trials": 0,
+      "truncation_rate": 0.0,
+      "example_note": "HTTP 500: {\"error\":{\"message\":\"Internal server error\",\"type\":\"InternalServerError\",\"param\":null,\"code\":500}}",
+      "specimens": []
+    },
+    {
+      "id": "format_email",
+      "note": "format: email (in xgrammar's supported set)",
+      "verdict": "REJECTED",
+      "tally": {
+        "REJECTED": 5
+      },
+      "completed_trials": 0,
+      "truncation_rate": 0.0,
+      "example_note": "HTTP 500: {\"error\":{\"message\":\"Internal server error\",\"type\":\"InternalServerError\",\"param\":null,\"code\":500}}",
+      "specimens": []
+    },
+    {
+      "id": "format_unsupported",
+      "note": "format outside the supported set (should be REJECTED by xgrammar)",
+      "verdict": "REJECTED",
+      "tally": {
+        "REJECTED": 5
+      },
+      "completed_trials": 0,
+      "truncation_rate": 0.0,
+      "example_note": "HTTP 500: {\"error\":{\"message\":\"Internal server error\",\"type\":\"InternalServerError\",\"param\":null,\"code\":500}}",
+      "specimens": []
+    },
+    {
+      "id": "minimum",
+      "note": "minimum on an integer",
+      "verdict": "REJECTED",
+      "tally": {
+        "REJECTED": 5
+      },
+      "completed_trials": 0,
+      "truncation_rate": 0.0,
+      "example_note": "HTTP 500: {\"error\":{\"message\":\"Internal server error\",\"type\":\"InternalServerError\",\"param\":null,\"code\":500}}",
+      "specimens": []
+    },
+    {
+      "id": "maximum",
+      "note": "maximum on a number",
+      "verdict": "REJECTED",
+      "tally": {
+        "REJECTED": 5
+      },
+      "completed_trials": 0,
+      "truncation_rate": 0.0,
+      "example_note": "HTTP 500: {\"error\":{\"message\":\"Internal server error\",\"type\":\"InternalServerError\",\"param\":null,\"code\":500}}",
+      "specimens": []
+    },
+    {
+      "id": "exclusiveMinimum",
+      "note": "exclusiveMinimum boundary",
+      "verdict": "REJECTED",
+      "tally": {
+        "REJECTED": 5
+      },
+      "completed_trials": 0,
+      "truncation_rate": 0.0,
+      "example_note": "HTTP 500: {\"error\":{\"message\":\"Internal server error\",\"type\":\"InternalServerError\",\"param\":null,\"code\":500}}",
+      "specimens": []
+    },
+    {
+      "id": "multipleOf",
+      "note": "multipleOf (on xgrammar's rejection list)",
+      "verdict": "REJECTED",
+      "tally": {
+        "REJECTED": 5
+      },
+      "completed_trials": 0,
+      "truncation_rate": 0.0,
+      "example_note": "HTTP 500: {\"error\":{\"message\":\"Internal server error\",\"type\":\"InternalServerError\",\"param\":null,\"code\":500}}",
+      "specimens": []
+    },
+    {
+      "id": "minItems",
+      "note": "minItems on an array",
+      "verdict": "REJECTED",
+      "tally": {
+        "REJECTED": 5
+      },
+      "completed_trials": 0,
+      "truncation_rate": 0.0,
+      "example_note": "HTTP 500: {\"error\":{\"message\":\"Internal server error\",\"type\":\"InternalServerError\",\"param\":null,\"code\":500}}",
+      "specimens": []
+    },
+    {
+      "id": "maxItems",
+      "note": "maxItems on an array",
+      "verdict": "REJECTED",
+      "tally": {
+        "REJECTED": 5
+      },
+      "completed_trials": 0,
+      "truncation_rate": 0.0,
+      "example_note": "HTTP 500: {\"error\":{\"message\":\"Internal server error\",\"type\":\"InternalServerError\",\"param\":null,\"code\":500}}",
+      "specimens": []
+    },
+    {
+      "id": "uniqueItems",
+      "note": "uniqueItems (on xgrammar's rejection list)",
+      "verdict": "REJECTED",
+      "tally": {
+        "REJECTED": 5
+      },
+      "completed_trials": 0,
+      "truncation_rate": 0.0,
+      "example_note": "HTTP 500: {\"error\":{\"message\":\"Internal server error\",\"type\":\"InternalServerError\",\"param\":null,\"code\":500}}",
+      "specimens": []
+    },
+    {
+      "id": "patternProperties",
+      "note": "patternProperties (rejection list; also outlines fallback trigger)",
+      "verdict": "REJECTED",
+      "tally": {
+        "REJECTED": 5
+      },
+      "completed_trials": 0,
+      "truncation_rate": 0.0,
+      "example_note": "HTTP 500: {\"error\":{\"message\":\"Internal server error\",\"type\":\"InternalServerError\",\"param\":null,\"code\":500}}",
+      "specimens": []
+    },
+    {
+      "id": "propertyNames",
+      "note": "propertyNames (on xgrammar's rejection list)",
+      "verdict": "REJECTED",
+      "tally": {
+        "REJECTED": 5
+      },
+      "completed_trials": 0,
+      "truncation_rate": 0.0,
+      "example_note": "HTTP 500: {\"error\":{\"message\":\"Internal server error\",\"type\":\"InternalServerError\",\"param\":null,\"code\":500}}",
+      "specimens": []
+    },
+    {
+      "id": "enum",
+      "note": "enum -- the control case; this one should always be PREVENTED",
+      "verdict": "REJECTED",
+      "tally": {
+        "REJECTED": 5
+      },
+      "completed_trials": 0,
+      "truncation_rate": 0.0,
+      "example_note": "HTTP 500: {\"error\":{\"message\":\"Internal server error\",\"type\":\"InternalServerError\",\"param\":null,\"code\":500}}",
+      "specimens": []
+    },
+    {
+      "id": "untyped_minimum",
+      "note": "UNTYPED {'minimum': 100} -- bypasses the type gate",
+      "verdict": "REJECTED",
+      "tally": {
+        "REJECTED": 5
+      },
+      "completed_trials": 0,
+      "truncation_rate": 0.0,
+      "example_note": "HTTP 500: {\"error\":{\"message\":\"Internal server error\",\"type\":\"InternalServerError\",\"param\":null,\"code\":500}}",
+      "specimens": []
+    },
+    {
+      "id": "untyped_pattern",
+      "note": "UNTYPED {'pattern': ...} -- bypasses the type gate",
+      "verdict": "REJECTED",
+      "tally": {
+        "REJECTED": 5
+      },
+      "completed_trials": 0,
+      "truncation_rate": 0.0,
+      "example_note": "HTTP 500: {\"error\":{\"message\":\"Internal server error\",\"type\":\"InternalServerError\",\"param\":null,\"code\":500}}",
+      "specimens": []
+    },
+    {
+      "id": "untyped_maxLength",
+      "note": "UNTYPED {'maxLength': 3} -- bypasses the type gate",
+      "verdict": "REJECTED",
+      "tally": {
+        "REJECTED": 5
+      },
+      "completed_trials": 0,
+      "truncation_rate": 0.0,
+      "example_note": "HTTP 500: {\"error\":{\"message\":\"Internal server error\",\"type\":\"InternalServerError\",\"param\":null,\"code\":500}}",
+      "specimens": []
+    }
+  ],
+  "usable": true
+}

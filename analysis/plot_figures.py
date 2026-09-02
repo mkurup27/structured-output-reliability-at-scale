@@ -67,7 +67,7 @@ def _save(fig, name):
 # 1. Schema validity vs. concurrency, by arm.
 # --------------------------------------------------------------------------
 # The strict sustained series uses the --no-keepalive control value at c=400,
-# since the pooled run's 0.9867 was a client connection-pool artifact rather
+# since the pooled run's 0.9991 was a client connection-pool artifact rather
 # than a schema failure. Plotting the pooled number would draw a droop that the
 # control run showed does not exist.
 def fig_curve():
@@ -206,9 +206,9 @@ def fig_repair():
 def fig_sustained():
     labels = ["1", "10", "50", "100", "200", "400"]
     xs = list(range(len(labels)))
-    p50 = [2.067, 1.983, 2.323, 2.807, 4.947, 9.987]
-    p99 = [2.255, 2.533, 3.101, 3.960, 6.650, 23.567]
-    queued = [0, 0, 0, 0, 68, 272]
+    p50 = [2.080, 1.944, 2.281, 2.830, 4.881, 9.386]
+    p99 = [2.232, 2.500, 2.985, 3.884, 7.404, 11.279]
+    queued = [0, 0, 0, 0, 72, 270]
     validity = [1.0] * 6
 
     fig, (ax, ax2) = plt.subplots(2, 1, figsize=(9.4, 6.6), dpi=200, sharex=True,
@@ -224,16 +224,16 @@ def fig_sustained():
     ax.plot([5], [10.561], marker="D", markersize=8.0, markerfacecolor="white",
             markeredgecolor=RED, markeredgewidth=1.8, ls="none", zorder=6,
             label="p99, connection pooling disabled")
-    ax.annotate("10.561 s with pooling disabled:\n13 s of the tail was the HTTP client",
-                xy=(5, 10.561), xytext=(2.62, 13.2), fontsize=8.5, color=RED,
+    ax.annotate("10.561 s with pooling disabled",
+                xy=(5, 10.561), xytext=(2.75, 12.7), fontsize=8.5, color=RED,
                 arrowprops=dict(arrowstyle="-", color=RED, lw=0.9,
                                 connectionstyle="arc3,rad=0.18"))
-    ax.annotate("p99 grows 10.4× across the ramp",
-                xy=(5, 23.567), xytext=(3.05, 21.6), fontsize=8.6, color=INK,
+    ax.annotate("p99 grows 5.1× across the ramp",
+                xy=(5, 11.279), xytext=(3.1, 9.0), fontsize=8.6, color=INK,
                 arrowprops=dict(arrowstyle="-", color=RULE, lw=0.9))
-    ax.set_ylim(0, 26.5)
+    ax.set_ylim(0, 15.0)
     _finish(ax, "End-to-end latency (s)")
-    _titles(ax, "Contention moved latency by an order of magnitude, and validity not at all",
+    _titles(ax, "Contention moved p99 by roughly fivefold, and validity not at all",
             "Sustained 180-second windows per level, 30 s warm-up discarded  ·  "
             "vLLM 0.27.1 / Qwen2.5-7B-Instruct / max_num_seqs=128",
             pad=32, y=1.055)
@@ -460,7 +460,7 @@ def fig_cardinality():
     labels = ["16", "64", "256", "1,024", "2,048"]
     xs = list(range(len(labels)))
     default = [0.481, 0.495, 0.497, 0.498, 0.489]
-    reduced = [1.211, 1.348, 1.238, 1.231, 1.229]
+    reduced = [1.217, 1.348, 1.238, 1.231, 1.229]
 
     fig, (ax, ax2) = plt.subplots(2, 1, figsize=(9.4, 7.6), dpi=200,
                                   gridspec_kw=dict(height_ratios=[1.3, 1.0],
@@ -476,7 +476,7 @@ def fig_cardinality():
                 xy=(2.0, 0.497), xytext=(1.15, 0.72), fontsize=8.6, color=INK,
                 arrowprops=dict(arrowstyle="-", color=RULE, lw=0.9,
                                 connectionstyle="arc3,rad=-0.2"))
-    ax.annotate("also flat, and 2.5× higher",
+    ax.annotate("penalty persists after the threshold is crossed",
                 xy=(2.6, 1.235), xytext=(1.95, 1.60), fontsize=8.6, color=RED,
                 arrowprops=dict(arrowstyle="-", color=RED, lw=0.9,
                                 connectionstyle="arc3,rad=0.2"))
@@ -493,7 +493,7 @@ def fig_cardinality():
     metrics = [
         ("Schema validity", 1.00, "1.0000 either way"),
         ("TTFT p50", 2.51, "0.489 s → 1.229 s"),
-        ("Per-token decode", 2.09, "24.3 ms → 50.9 ms"),
+        ("Per-token decode", 2.08, "24.4 ms → 50.7 ms"),
         ("End-to-end p50", 2.16, "2.783 s → 6.007 s"),
         ("End-to-end p99", 2.23, "4.500 s → 10.057 s"),
         ("Seconds per completed\nrequest, sustained c=400", 3.64, "5,855 → 1,609 in 180 s"),

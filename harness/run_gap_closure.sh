@@ -50,8 +50,8 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 MODEL="${MODEL:-Qwen/Qwen2.5-7B-Instruct}"
 METRICS="${METRICS:-}"
-H="python3 $HERE/validity_ramp_harness_v4.py --model $MODEL --dump-records"
-[ -n "$METRICS" ] && H="$H --metrics-url $METRICS --metrics-interval 2"
+H=(python3 "$HERE/validity_ramp_harness_v4.py" --model "$MODEL" --dump-records)
+[ -n "$METRICS" ] && H+=(--metrics-url "$METRICS" --metrics-interval 2)
 OUT="${OUT:-$HERE/../results}"
 mkdir -p "$OUT"
 
@@ -115,7 +115,7 @@ echo
 # the non-result more thoroughly; it does not test the hypothesis.
 #
 # So the ramp goes past max_num_seqs. At concurrency 200 and 400 against a
-# 128-slot batch, 72 and 272 requests respectively must wait, which is the
+# 128-slot batch, 72 and 270 requests respectively must wait, which is the
 # first point in this entire study where the scheduler has to make a decision.
 # Watch num_requests_waiting_max going positive -- that is the moment
 # contention begins -- and then watch whether schema_valid_rate moves at all.
@@ -128,11 +128,11 @@ echo
 # ---------------------------------------------------------------------------
 if want 1; then
 echo "== Run 1: sustained load past batch capacity, strict =="
-$H --mode strict --levels 1,10,50,100,200,400 --duration-s 180 --warmup-s 30 \
+"${H[@]}" --mode strict --levels 1,10,50,100,200,400 --duration-s 180 --warmup-s 30 \
    --out "$OUT/r1_sustained_strict.json"
 
 echo "== Run 1b: sustained load past batch capacity, prompt_only baseline =="
-$H --mode prompt_only --levels 1,10,50,100,200,400 --duration-s 180 --warmup-s 30 \
+"${H[@]}" --mode prompt_only --levels 1,10,50,100,200,400 --duration-s 180 --warmup-s 30 \
    --out "$OUT/r1b_sustained_prompt_only.json"
 
 # Run 1c -- KV-cache pressure from sequence length rather than request count.
@@ -143,7 +143,7 @@ $H --mode prompt_only --levels 1,10,50,100,200,400 --duration-s 180 --warmup-s 3
 # grammar-constrained decode. 2048-token budgets at 100-400 concurrent puts
 # real pressure on the cache for the first time in this study.
 echo "== Run 1c: long generations, sustained =="
-$H --mode strict --levels 100,400 --duration-s 180 --warmup-s 30 \
+"${H[@]}" --mode strict --levels 100,400 --duration-s 180 --warmup-s 30 \
    --max-tokens 2048 --out "$OUT/r1c_long_generations.json"
 else skip 1 "sustained load"; fi
 
@@ -160,11 +160,11 @@ else skip 1 "sustained load"; fi
 # ---------------------------------------------------------------------------
 if want 2; then
 echo "== Run 2: TTFT pass, strict =="
-$H --mode strict --levels 1,10,50,100 --requests-per-level 200 --stream \
+"${H[@]}" --mode strict --levels 1,10,50,100 --requests-per-level 200 --stream \
    --out "$OUT/r2_ttft_strict.json"
 
 echo "== Run 2b: TTFT pass, prompt_only =="
-$H --mode prompt_only --levels 1,10,50,100 --requests-per-level 200 --stream \
+"${H[@]}" --mode prompt_only --levels 1,10,50,100 --requests-per-level 200 --stream \
    --out "$OUT/r2b_ttft_prompt_only.json"
 else skip 2 "TTFT pass"; fi
 
@@ -183,13 +183,13 @@ else skip 2 "TTFT pass"; fi
 # ---------------------------------------------------------------------------
 if want 3; then
 echo "== Run 3: multi-turn only, strict =="
-$H --mode strict --levels 1,10,50,100 --requests-per-level 200 \
+"${H[@]}" --mode strict --levels 1,10,50,100 --requests-per-level 200 \
    --taskset multiturn --out "$OUT/r3_multiturn_strict.json"
 
 echo "== Run 3b: agent mixture, both arms =="
-$H --mode strict --levels 1,10,50,100 --requests-per-level 200 \
+"${H[@]}" --mode strict --levels 1,10,50,100 --requests-per-level 200 \
    --taskset agent_mix --out "$OUT/r3b_agentmix_strict.json"
-$H --mode prompt_only --levels 1,10,50,100 --requests-per-level 200 \
+"${H[@]}" --mode prompt_only --levels 1,10,50,100 --requests-per-level 200 \
    --taskset agent_mix --out "$OUT/r3b_agentmix_prompt_only.json"
 else skip 3 "two-turn agent"; fi
 
@@ -200,15 +200,15 @@ else skip 3 "two-turn agent"; fi
 # ---------------------------------------------------------------------------
 if want 4; then
 echo "== Run 4: tight budget (truncation floor) =="
-$H --mode strict --levels 1,10,50,100 --requests-per-level 200 \
+"${H[@]}" --mode strict --levels 1,10,50,100 --requests-per-level 200 \
    --max-tokens 128 --out "$OUT/r4_tight_budget.json"
 
 echo "== Run 4b: edge schemas (constraint boundary) =="
-$H --mode strict --levels 1,10,50,100 --requests-per-level 200 \
+"${H[@]}" --mode strict --levels 1,10,50,100 --requests-per-level 200 \
    --taskset edge --out "$OUT/r4b_edge_schemas.json"
 
 echo "== Run 4c: varying seed (rates as proportions) =="
-$H --mode strict --levels 1,10,50,100 --requests-per-level 200 \
+"${H[@]}" --mode strict --levels 1,10,50,100 --requests-per-level 200 \
    --seed -1 --temperature 0.7 --out "$OUT/r4c_varying_seed.json"
 else skip 4 "tight budget, edge schemas, varying seed"; fi
 
@@ -251,20 +251,20 @@ if [ "$R6_C1_REQUESTS" != "200" ]; then
   echo "   (concurrency 1 trimmed to $R6_C1_REQUESTS requests)"
   for M in strict prompt_only; do
     [ "$M" = strict ] && SFX=r6_deep_multiturn_strict || SFX=r6b_deep_multiturn_prompt_only
-    $H --mode "$M" --levels 1 --requests-per-level "$R6_C1_REQUESTS" \
+    "${H[@]}" --mode "$M" --levels 1 --requests-per-level "$R6_C1_REQUESTS" \
        --taskset deep_multiturn --out "$OUT/${SFX}_c1.json"
-    $H --mode "$M" --levels 10,50,100 --requests-per-level 200 \
+    "${H[@]}" --mode "$M" --levels 10,50,100 --requests-per-level 200 \
        --taskset deep_multiturn --out "$OUT/${SFX}.json"
   done
 else
-  $H --mode strict --levels 1,10,50,100 --requests-per-level 200 \
+  "${H[@]}" --mode strict --levels 1,10,50,100 --requests-per-level 200 \
      --taskset deep_multiturn --out "$OUT/r6_deep_multiturn_strict.json"
-  $H --mode prompt_only --levels 1,10,50,100 --requests-per-level 200 \
+  "${H[@]}" --mode prompt_only --levels 1,10,50,100 --requests-per-level 200 \
      --taskset deep_multiturn --out "$OUT/r6b_deep_multiturn_prompt_only.json"
 fi
 
 echo "== Run 6c: five-step agent alongside the single-turn set =="
-$H --mode strict --levels 1,10,50,100 --requests-per-level 200 \
+"${H[@]}" --mode strict --levels 1,10,50,100 --requests-per-level 200 \
    --taskset agent_mix_deep --out "$OUT/r6c_agentmix_deep_strict.json"
 else skip 6 "five-step agent"; fi
 
@@ -308,7 +308,7 @@ echo "== Run 7: schema cardinality ladder =="
 for CARD in 64 256 1024 2048; do
   # 3x the cardinality, so every schema is requested at least twice and the
   # second pass reads as a cache hit against the first pass's compile.
-  $H --mode strict --levels 50 --requests-per-level "$((CARD * 3))" \
+  "${H[@]}" --mode strict --levels 50 --requests-per-level "$((CARD * 3))" \
      --schema-cardinality "$CARD" --stream \
      --out "$OUT/r7_cardinality_${CARD}.json"
 done
@@ -318,7 +318,7 @@ echo "== Run 7b: cardinality under sustained load =="
 # holds cardinality high and sustains load, which is the only configuration in
 # the whole suite where cache churn and queueing are present at once -- the
 # combination that could actually force preemption.
-$H --mode strict --levels 100,400 --duration-s 180 --warmup-s 30 \
+"${H[@]}" --mode strict --levels 100,400 --duration-s 180 --warmup-s 30 \
    --schema-cardinality 2048 --out "$OUT/r7b_cardinality_sustained.json"
 else skip 7 "schema cardinality"; fi
 
@@ -336,22 +336,18 @@ else skip 7 "schema cardinality"; fi
 #
 # This needs the SERVER restarted, which this script cannot do for you:
 #
-#   VLLM_XGRAMMAR_CACHE_MB=16 vllm serve Qwen/Qwen2.5-7B-Instruct \
+#   VLLM_XGRAMMAR_CACHE_MB=1 vllm serve Qwen/Qwen2.5-7B-Instruct \
 #     --structured-outputs-config.backend xgrammar \
 #     --max-num-seqs 128 --enforce-eager
 #
 # Then declare the value you used, which gates the stage and lands in the
 # filenames so the results are self-describing:
 #
-#   STAGES=8 XGRAMMAR_CACHE_MB=16 bash run_gap_closure.sh
+#   STAGES=8 XGRAMMAR_CACHE_MB=1 bash run_gap_closure.sh
 #
-# At roughly 256 KiB per compiled schema, 16 MiB holds on the order of 64, so
-# the 16-schema rung should fit and everything above it should thrash. Two
-# things to read. A step up in TTFT between two rungs is the cache boundary,
-# measured rather than inferred from a source comment. And a flat TTFT even
-# here would say the compile itself is cheap for schemas this small, which is a
-# different and equally publishable answer -- it would mean the essay's
-# ~1000-schema threshold is about memory rather than about latency.
+# At 1 MiB the published 16-schema run already pays the penalty. The higher
+# rungs show whether that penalty grows with cardinality or stays flat once the
+# working set no longer fits.
 #
 # Restore the default cache before running any other stage. A reduced cache
 # invalidates every other arm's numbers.
@@ -359,14 +355,14 @@ else skip 7 "schema cardinality"; fi
 if want 8; then
   if [ -z "${XGRAMMAR_CACHE_MB:-}" ]; then
     echo "!! stage 8 skipped: set XGRAMMAR_CACHE_MB to the value the SERVER was"
-    echo "   restarted with (e.g. XGRAMMAR_CACHE_MB=16). The client cannot set"
+    echo "   restarted with (e.g. XGRAMMAR_CACHE_MB=1). The client cannot set"
     echo "   VLLM_XGRAMMAR_CACHE_MB -- it is read by the serving process at"
     echo "   startup, so an unrestarted server would silently produce a second"
     echo "   copy of stage 7 under a filename claiming a smaller cache."
   else
     echo "== Run 8: cardinality ladder at VLLM_XGRAMMAR_CACHE_MB=$XGRAMMAR_CACHE_MB =="
     for CARD in 16 64 256 1024 2048; do
-      $H --mode strict --levels 50 --requests-per-level "$((CARD * 3))" \
+      "${H[@]}" --mode strict --levels 50 --requests-per-level "$((CARD * 3))" \
          --schema-cardinality "$CARD" --stream \
          --out "$OUT/r8_cache${XGRAMMAR_CACHE_MB}mb_cardinality_${CARD}.json"
     done
@@ -374,8 +370,8 @@ if want 8; then
     echo "== Run 8b: undersized cache under sustained load =="
     # Eviction and queueing at once, which is the only configuration in either
     # round that could plausibly force preemption. It has read zero everywhere
-    # else, including at concurrency 400 with 272 requests queued.
-    $H --mode strict --levels 100,400 --duration-s 180 --warmup-s 30 \
+    # else, including at concurrency 400 with 270 requests queued.
+    "${H[@]}" --mode strict --levels 100,400 --duration-s 180 --warmup-s 30 \
        --schema-cardinality 2048 \
        --out "$OUT/r8b_cache${XGRAMMAR_CACHE_MB}mb_sustained.json"
   fi
@@ -413,7 +409,7 @@ if want 5 && [ -n "${DO_BASE_URL:-}" ]; then
   echo "== Run 5: managed endpoint (arm c), two independent repeats =="
   for rep in 1 2; do
     BASE_URL="$DO_BASE_URL" API_KEY="${DO_API_KEY:?set DO_API_KEY}" \
-      python3 validity_ramp_harness_v4.py \
+      python3 "$HERE/validity_ramp_harness_v4.py" \
         --model "${DO_MODEL:-mistral-3-14B}" --dump-records \
         --mode strict --levels 1,10,50,100 --requests-per-level 200 \
         --max-tokens 1024 --out "$OUT/r5_managed_rep${rep}.json"
@@ -422,9 +418,9 @@ fi
 
 echo
 echo "wrote results to $OUT  (stages: $STAGES)"
-echo "Summarize with: python3 $HERE/../analysis/summarize_runs.py $OUT/*.json"
-echo "For the article: specimens_by_category in each file is one real captured"
-echo "output per failure kind, and cost_per_usable_usd is measured from token"
+echo "Summarize with: python3 $HERE/../analysis/summarize_runs.py $OUT"
+echo "For the article: failed records retain captured specimens, and"
+echo "cost_per_usable_usd is measured from token"
 echo "usage rather than modelled from an assumed failure rate."
 echo
 echo "Every stage except 5 targeted BASE_URL=${BASE_URL:-unset} (self-hosted vLLM)."

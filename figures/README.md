@@ -41,12 +41,12 @@ The same task fails at the parse rung without enforcement and at semantic valida
 
 ![Latency and queue depth against concurrency](latency-vs-validity-sustained.png)
 
-p99 climbs from 2.3 to 23.6 seconds and queue depth reaches 272, while schema validity stays flat at 1.00. Contention moved latency by an order of magnitude and validity not at all.
+p99 climbs from 2.2 to 11.3 seconds and queue depth reaches 270, while schema validity among returned responses stays at 1.00. Contention moved p99 by roughly fivefold and validity not at all.
 
 ### `grammar-cache-cardinality.png`
 
 ![Grammar cache and cardinality, two panels](grammar-cache-cardinality.png)
 
-Two panels. Left: TTFT flat at 0.49 s across 16 to 2,048 distinct schemas on the default cache, and flat at 1.23 s on a 1 MiB cache. Once the cache stops fitting the working set, adding schemas changes nothing, because every request is already paying. Right: latency, per-token decode and throughput all move by 2 to 3.6× while schema validity stays at 1.00.
+Two panels. Left: TTFT stays near 0.49 s across 16 to 2,048 distinct schemas on the default cache. At 1 MiB it stays above 1.2 s once the working set no longer fits, with a noisy 64-schema point. Across the top three rungs, adding schemas changes little because every request is already paying. Right: latency, per-token decode and throughput all move by 2 to 3.6× while schema validity stays at 1.00.
 
 Every rung of the validation ladder reports success across that entire range.

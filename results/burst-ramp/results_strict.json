@@ -1,0 +1,90 @@
+[
+  {
+    "concurrency": 1,
+    "requests": 200,
+    "wall_s": 350.08,
+    "parse_rate": 1.0,
+    "schema_valid_rate": 1.0,
+    "semantic_valid_rate": 0.67,
+    "truncation_rate": 0.0,
+    "finish_reasons": {
+      "stop": 200
+    },
+    "errors": {},
+    "e2e_p50": 2.083,
+    "e2e_p95": 2.241,
+    "e2e_p99": 2.28,
+    "attempts_per_valid": 1.0,
+    "mean_completion_tokens": 153.4,
+    "specimens": [],
+    "mode": "strict",
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "max_tokens": 512
+  },
+  {
+    "concurrency": 10,
+    "requests": 200,
+    "wall_s": 37.56,
+    "parse_rate": 1.0,
+    "schema_valid_rate": 1.0,
+    "semantic_valid_rate": 0.67,
+    "truncation_rate": 0.0,
+    "finish_reasons": {
+      "stop": 200
+    },
+    "errors": {},
+    "e2e_p50": 1.96,
+    "e2e_p95": 2.464,
+    "e2e_p99": 2.483,
+    "attempts_per_valid": 1.0,
+    "mean_completion_tokens": 146.0,
+    "specimens": [],
+    "mode": "strict",
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "max_tokens": 512
+  },
+  {
+    "concurrency": 50,
+    "requests": 200,
+    "wall_s": 10.04,
+    "parse_rate": 1.0,
+    "schema_valid_rate": 1.0,
+    "semantic_valid_rate": 0.67,
+    "truncation_rate": 0.0,
+    "finish_reasons": {
+      "stop": 200
+    },
+    "errors": {},
+    "e2e_p50": 2.272,
+    "e2e_p95": 3.153,
+    "e2e_p99": 3.162,
+    "attempts_per_valid": 1.0,
+    "mean_completion_tokens": 144.8,
+    "specimens": [],
+    "mode": "strict",
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "max_tokens": 512
+  },
+  {
+    "concurrency": 100,
+    "requests": 200,
+    "wall_s": 6.4,
+    "parse_rate": 1.0,
+    "schema_valid_rate": 1.0,
+    "semantic_valid_rate": 0.67,
+    "truncation_rate": 0.0,
+    "finish_reasons": {
+      "stop": 200
+    },
+    "errors": {},
+    "e2e_p50": 2.738,
+    "e2e_p95": 3.619,
+    "e2e_p99": 3.637,
+    "attempts_per_valid": 1.0,
+    "mean_completion_tokens": 146.4,
+    "specimens": [],
+    "mode": "strict",
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "max_tokens": 512
+  }
+]

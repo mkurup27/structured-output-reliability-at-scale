@@ -1,26 +1,40 @@
 # analysis/ — turning runs into tables and figures
 
-Two scripts. One reads result files and prints the article's tables; the other draws the figures and reads nothing.
+Three scripts. Two read result files and print the article's tables; the third draws the figures and reads nothing.
 
 | Script | Input | Output |
 |---|---|---|
 | `summarize_runs.py` | `../results/*.json` | Per-arm tables, taxonomy breakdown, contention verdict |
-| `plot_figures.py` | **none** | The six PNGs in `../figures/` |
+| `compare_conformance.py` | `../results/conformance/*.json` | The keyword-enforcement grid |
+| `plot_figures.py` | none | The six PNGs in `../figures/` |
 
 ## `summarize_runs.py`
 
 ```bash
-python3 summarize_runs.py ../results/*.json
-python3 summarize_runs.py --specimens ../results/r1_sustained_strict.json
+python3 summarize_runs.py ../results
+python3 summarize_runs.py --specimens ../results/r1_sustained_strict.json.gz
 ```
 
-Takes one or more run files and emits, per arm: the configuration line (mode, taskset, load shape, token budget, temperature, seed), the per-level table (requests, schema validity, semantic validity, truncation, max queue depth, preemptions, KV-cache peak, p50, p99, cost per usable output), the taxonomy category and subcategory counts per level, and a derived contention verdict. `--specimens` prints the first captured raw output per failure category.
+Takes one or more run files and emits, per arm: the configuration line (mode, taskset, load shape, token budget, temperature, seed), the per-level table (requests, schema validity, semantic validity, truncation, max queue depth, preemptions, KV-cache peak, p50, p99, cost per usable output), the taxonomy category and subcategory counts per level, and a derived contention verdict. `--specimens` prints the first captured raw output per failure category, deriving it from `records` when the aggregate specimen field is absent.
 
 ### The contention verdict
 
 The summarizer reports which levels queued at all and which saw preemption, and flags any level where nothing queued as untested rather than as passing. That guard exists because its absence produced a wrong conclusion once: a ramp that stopped at concurrency 100 against a 128-slot batch showed flat validity and was read as evidence that concurrency does not affect validity, when it was a correct measurement of a server where queueing was impossible by construction.
 
 It also reports offered against reached schema cardinality, so a run whose rotation fell short is not read as the cardinality on its label. The sustained reduced-cache arm is exactly that case: labelled 2,048, reached 1,609.
+
+## `compare_conformance.py`
+
+```bash
+python3 compare_conformance.py ../results/conformance/conformance_xgrammar.json \
+                               ../results/conformance/conformance_guidance.json
+```
+
+Takes one or more probe outputs and emits the enforcement grid, a resolved-version block per backend, a type-gate section showing which constraints stopped being enforced once `type` was omitted, and a cross-backend divergence list.
+
+It checks the `enum` control case first and prints nothing but a warning if that case failed, because a backend that can't enforce `enum` isn't measuring the other seventeen keywords either. Passing all four of this study's probe files trips that guard, since `outlines` and `lm-format-enforcer` 500'd on every request. Pass the two working backends to reproduce the published grid.
+
+`minimum` comes back as `partial data` on both backends. That's the honest verdict rather than a bug: the case is inconclusive, and the article reports it as such.
 
 ## `plot_figures.py`
 

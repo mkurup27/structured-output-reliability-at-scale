@@ -1,0 +1,122 @@
+[
+  {
+    "concurrency": 1,
+    "requests": 200,
+    "wall_s": 293.1,
+    "parse_rate": 0.67,
+    "schema_valid_rate": 0.67,
+    "semantic_valid_rate": 0.67,
+    "truncation_rate": 0.0,
+    "finish_reasons": {
+      "stop": 200
+    },
+    "errors": {
+      "parse: JSONDecodeError": 66
+    },
+    "e2e_p50": 1.359,
+    "e2e_p95": 2.245,
+    "e2e_p99": 2.316,
+    "attempts_per_valid": 1.4925,
+    "mean_completion_tokens": 127.0,
+    "specimens": [
+      "```json\n{\n  \"records\": [\n    {\n      \"sku\": \"SKU-01044\",\n      \"qty\": 3,\n      \"unit_price\": 10.00,\n      \"note\": \"block storage\"\n    },\n    {\n      \"sku\": \"SKU-90210\",\n      \"qty\": 1,\n      \"unit_price\": 4.41,\n      \"note\": \"H100 hour\"\n    },\n    {\n      \"sku\": \"SKU-33127\",\n      \"qty\": 12,\n      \"unit_price\": 0.01,\n      \"note\": \"bandwidth GB\"\n    },\n    {\n      \"sku\": \"SKU-77219\",\n      \"qty\": 2,\n      \"unit_price\": 0.06,\n      \"note\": \"snapshot\"\n    }\n  ],\n  \"total\": 34.89\n}\n```",
+      "```json\n{\n  \"records\": [\n    {\n      \"sku\": \"SKU-01044\",\n      \"qty\": 3,\n      \"unit_price\": 10.00,\n      \"note\": \"block storage\"\n    },\n    {\n      \"sku\": \"SKU-90210\",\n      \"qty\": 1,\n      \"unit_price\": 4.41,\n      \"note\": \"H100 hour\"\n    },\n    {\n      \"sku\": \"SKU-33127\",\n      \"qty\": 12,\n      \"unit_price\": 0.01,\n      \"note\": \"bandwidth GB\"\n    },\n    {\n      \"sku\": \"SKU-77219\",\n      \"qty\": 2,\n      \"unit_price\": 0.06,\n      \"note\": \"snapshot\"\n    }\n  ],\n  \"total\": 34.89\n}\n```",
+      "```json\n{\n  \"records\": [\n    {\n      \"sku\": \"SKU-01044\",\n      \"qty\": 3,\n      \"unit_price\": 10.00,\n      \"note\": \"block storage\"\n    },\n    {\n      \"sku\": \"SKU-90210\",\n      \"qty\": 1,\n      \"unit_price\": 4.41,\n      \"note\": \"H100 hour\"\n    },\n    {\n      \"sku\": \"SKU-33127\",\n      \"qty\": 12,\n      \"unit_price\": 0.01,\n      \"note\": \"bandwidth GB\"\n    },\n    {\n      \"sku\": \"SKU-77219\",\n      \"qty\": 2,\n      \"unit_price\": 0.06,\n      \"note\": \"snapshot\"\n    }\n  ],\n  \"total\": 34.89\n}\n```",
+      "```json\n{\n  \"records\": [\n    {\n      \"sku\": \"SKU-01044\",\n      \"qty\": 3,\n      \"unit_price\": 10.00,\n      \"note\": \"block storage\"\n    },\n    {\n      \"sku\": \"SKU-90210\",\n      \"qty\": 1,\n      \"unit_price\": 4.41,\n      \"note\": \"H100 hour\"\n    },\n    {\n      \"sku\": \"SKU-33127\",\n      \"qty\": 12,\n      \"unit_price\": 0.01,\n      \"note\": \"bandwidth GB\"\n    },\n    {\n      \"sku\": \"SKU-77219\",\n      \"qty\": 2,\n      \"unit_price\": 0.06,\n      \"note\": \"snapshot\"\n    }\n  ],\n  \"total\": 34.89\n}\n```",
+      "```json\n{\n  \"records\": [\n    {\n      \"sku\": \"SKU-01044\",\n      \"qty\": 3,\n      \"unit_price\": 10.00,\n      \"note\": \"block storage\"\n    },\n    {\n      \"sku\": \"SKU-90210\",\n      \"qty\": 1,\n      \"unit_price\": 4.41,\n      \"note\": \"H100 hour\"\n    },\n    {\n      \"sku\": \"SKU-33127\",\n      \"qty\": 12,\n      \"unit_price\": 0.01,\n      \"note\": \"bandwidth GB\"\n    },\n    {\n      \"sku\": \"SKU-77219\",\n      \"qty\": 2,\n      \"unit_price\": 0.06,\n      \"note\": \"snapshot\"\n    }\n  ],\n  \"total\": 34.89\n}\n```"
+    ],
+    "mode": "prompt_only",
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "max_tokens": 512
+  },
+  {
+    "concurrency": 10,
+    "requests": 200,
+    "wall_s": 30.98,
+    "parse_rate": 0.67,
+    "schema_valid_rate": 0.67,
+    "semantic_valid_rate": 0.67,
+    "truncation_rate": 0.0,
+    "finish_reasons": {
+      "stop": 200
+    },
+    "errors": {
+      "parse: JSONDecodeError": 66
+    },
+    "e2e_p50": 1.373,
+    "e2e_p95": 2.263,
+    "e2e_p99": 2.614,
+    "attempts_per_valid": 1.4925,
+    "mean_completion_tokens": 127.0,
+    "specimens": [
+      "```json\n{\n  \"records\": [\n    {\n      \"sku\": \"SKU-01044\",\n      \"qty\": 3,\n      \"unit_price\": 10.00,\n      \"note\": \"block storage\"\n    },\n    {\n      \"sku\": \"SKU-90210\",\n      \"qty\": 1,\n      \"unit_price\": 4.41,\n      \"note\": \"H100 hour\"\n    },\n    {\n      \"sku\": \"SKU-33127\",\n      \"qty\": 12,\n      \"unit_price\": 0.01,\n      \"note\": \"bandwidth GB\"\n    },\n    {\n      \"sku\": \"SKU-77219\",\n      \"qty\": 2,\n      \"unit_price\": 0.06,\n      \"note\": \"snapshot\"\n    }\n  ],\n  \"total\": 34.89\n}\n```",
+      "```json\n{\n  \"records\": [\n    {\n      \"sku\": \"SKU-01044\",\n      \"qty\": 3,\n      \"unit_price\": 10.00,\n      \"note\": \"block storage\"\n    },\n    {\n      \"sku\": \"SKU-90210\",\n      \"qty\": 1,\n      \"unit_price\": 4.41,\n      \"note\": \"H100 hour\"\n    },\n    {\n      \"sku\": \"SKU-33127\",\n      \"qty\": 12,\n      \"unit_price\": 0.01,\n      \"note\": \"bandwidth GB\"\n    },\n    {\n      \"sku\": \"SKU-77219\",\n      \"qty\": 2,\n      \"unit_price\": 0.06,\n      \"note\": \"snapshot\"\n    }\n  ],\n  \"total\": 34.89\n}\n```",
+      "```json\n{\n  \"records\": [\n    {\n      \"sku\": \"SKU-01044\",\n      \"qty\": 3,\n      \"unit_price\": 10.00,\n      \"note\": \"block storage\"\n    },\n    {\n      \"sku\": \"SKU-90210\",\n      \"qty\": 1,\n      \"unit_price\": 4.41,\n      \"note\": \"H100 hour\"\n    },\n    {\n      \"sku\": \"SKU-33127\",\n      \"qty\": 12,\n      \"unit_price\": 0.01,\n      \"note\": \"bandwidth GB\"\n    },\n    {\n      \"sku\": \"SKU-77219\",\n      \"qty\": 2,\n      \"unit_price\": 0.06,\n      \"note\": \"snapshot\"\n    }\n  ],\n  \"total\": 34.89\n}\n```",
+      "```json\n{\n  \"records\": [\n    {\n      \"sku\": \"SKU-01044\",\n      \"qty\": 3,\n      \"unit_price\": 10.00,\n      \"note\": \"block storage\"\n    },\n    {\n      \"sku\": \"SKU-90210\",\n      \"qty\": 1,\n      \"unit_price\": 4.41,\n      \"note\": \"H100 hour\"\n    },\n    {\n      \"sku\": \"SKU-33127\",\n      \"qty\": 12,\n      \"unit_price\": 0.01,\n      \"note\": \"bandwidth GB\"\n    },\n    {\n      \"sku\": \"SKU-77219\",\n      \"qty\": 2,\n      \"unit_price\": 0.06,\n      \"note\": \"snapshot\"\n    }\n  ],\n  \"total\": 34.89\n}\n```",
+      "```json\n{\n  \"records\": [\n    {\n      \"sku\": \"SKU-01044\",\n      \"qty\": 3,\n      \"unit_price\": 10.00,\n      \"note\": \"block storage\"\n    },\n    {\n      \"sku\": \"SKU-90210\",\n      \"qty\": 1,\n      \"unit_price\": 4.41,\n      \"note\": \"H100 hour\"\n    },\n    {\n      \"sku\": \"SKU-33127\",\n      \"qty\": 12,\n      \"unit_price\": 0.01,\n      \"note\": \"bandwidth GB\"\n    },\n    {\n      \"sku\": \"SKU-77219\",\n      \"qty\": 2,\n      \"unit_price\": 0.06,\n      \"note\": \"snapshot\"\n    }\n  ],\n  \"total\": 34.89\n}\n```"
+    ],
+    "mode": "prompt_only",
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "max_tokens": 512
+  },
+  {
+    "concurrency": 50,
+    "requests": 200,
+    "wall_s": 7.88,
+    "parse_rate": 0.67,
+    "schema_valid_rate": 0.67,
+    "semantic_valid_rate": 0.67,
+    "truncation_rate": 0.0,
+    "finish_reasons": {
+      "stop": 200
+    },
+    "errors": {
+      "parse: JSONDecodeError": 66
+    },
+    "e2e_p50": 1.481,
+    "e2e_p95": 2.602,
+    "e2e_p99": 2.641,
+    "attempts_per_valid": 1.4925,
+    "mean_completion_tokens": 127.0,
+    "specimens": [
+      "```json\n{\n  \"records\": [\n    {\n      \"sku\": \"SKU-01044\",\n      \"qty\": 3,\n      \"unit_price\": 10.00,\n      \"note\": \"block storage\"\n    },\n    {\n      \"sku\": \"SKU-90210\",\n      \"qty\": 1,\n      \"unit_price\": 4.41,\n      \"note\": \"H100 hour\"\n    },\n    {\n      \"sku\": \"SKU-33127\",\n      \"qty\": 12,\n      \"unit_price\": 0.01,\n      \"note\": \"bandwidth GB\"\n    },\n    {\n      \"sku\": \"SKU-77219\",\n      \"qty\": 2,\n      \"unit_price\": 0.06,\n      \"note\": \"snapshot\"\n    }\n  ],\n  \"total\": 34.87\n}\n```",
+      "```json\n{\n  \"records\": [\n    {\n      \"sku\": \"SKU-01044\",\n      \"qty\": 3,\n      \"unit_price\": 10.00,\n      \"note\": \"block storage\"\n    },\n    {\n      \"sku\": \"SKU-90210\",\n      \"qty\": 1,\n      \"unit_price\": 4.41,\n      \"note\": \"H100 hour\"\n    },\n    {\n      \"sku\": \"SKU-33127\",\n      \"qty\": 12,\n      \"unit_price\": 0.01,\n      \"note\": \"bandwidth GB\"\n    },\n    {\n      \"sku\": \"SKU-77219\",\n      \"qty\": 2,\n      \"unit_price\": 0.06,\n      \"note\": \"snapshot\"\n    }\n  ],\n  \"total\": 34.89\n}\n```",
+      "```json\n{\n  \"records\": [\n    {\n      \"sku\": \"SKU-01044\",\n      \"qty\": 3,\n      \"unit_price\": 10.00,\n      \"note\": \"block storage\"\n    },\n    {\n      \"sku\": \"SKU-90210\",\n      \"qty\": 1,\n      \"unit_price\": 4.41,\n      \"note\": \"H100 hour\"\n    },\n    {\n      \"sku\": \"SKU-33127\",\n      \"qty\": 12,\n      \"unit_price\": 0.01,\n      \"note\": \"bandwidth GB\"\n    },\n    {\n      \"sku\": \"SKU-77219\",\n      \"qty\": 2,\n      \"unit_price\": 0.06,\n      \"note\": \"snapshot\"\n    }\n  ],\n  \"total\": 34.89\n}\n```",
+      "```json\n{\n  \"records\": [\n    {\n      \"sku\": \"SKU-01044\",\n      \"qty\": 3,\n      \"unit_price\": 10.00,\n      \"note\": \"block storage\"\n    },\n    {\n      \"sku\": \"SKU-90210\",\n      \"qty\": 1,\n      \"unit_price\": 4.41,\n      \"note\": \"H100 hour\"\n    },\n    {\n      \"sku\": \"SKU-33127\",\n      \"qty\": 12,\n      \"unit_price\": 0.01,\n      \"note\": \"bandwidth GB\"\n    },\n    {\n      \"sku\": \"SKU-77219\",\n      \"qty\": 2,\n      \"unit_price\": 0.06,\n      \"note\": \"snapshot\"\n    }\n  ],\n  \"total\": 34.89\n}\n```",
+      "```json\n{\n  \"records\": [\n    {\n      \"sku\": \"SKU-01044\",\n      \"qty\": 3,\n      \"unit_price\": 10.00,\n      \"note\": \"block storage\"\n    },\n    {\n      \"sku\": \"SKU-90210\",\n      \"qty\": 1,\n      \"unit_price\": 4.41,\n      \"note\": \"H100 hour\"\n    },\n    {\n      \"sku\": \"SKU-33127\",\n      \"qty\": 12,\n      \"unit_price\": 0.01,\n      \"note\": \"bandwidth GB\"\n    },\n    {\n      \"sku\": \"SKU-77219\",\n      \"qty\": 2,\n      \"unit_price\": 0.06,\n      \"note\": \"snapshot\"\n    }\n  ],\n  \"total\": 34.89\n}\n```"
+    ],
+    "mode": "prompt_only",
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "max_tokens": 512
+  },
+  {
+    "concurrency": 100,
+    "requests": 200,
+    "wall_s": 5.28,
+    "parse_rate": 0.67,
+    "schema_valid_rate": 0.67,
+    "semantic_valid_rate": 0.67,
+    "truncation_rate": 0.0,
+    "finish_reasons": {
+      "stop": 200
+    },
+    "errors": {
+      "parse: JSONDecodeError": 66
+    },
+    "e2e_p50": 1.609,
+    "e2e_p95": 2.923,
+    "e2e_p99": 2.935,
+    "attempts_per_valid": 1.4925,
+    "mean_completion_tokens": 127.0,
+    "specimens": [
+      "```json\n{\n  \"records\": [\n    {\n      \"sku\": \"SKU-01044\",\n      \"qty\": 3,\n      \"unit_price\": 10.00,\n      \"note\": \"block storage\"\n    },\n    {\n      \"sku\": \"SKU-90210\",\n      \"qty\": 1,\n      \"unit_price\": 4.41,\n      \"note\": \"H100 hour\"\n    },\n    {\n      \"sku\": \"SKU-33127\",\n      \"qty\": 12,\n      \"unit_price\": 0.01,\n      \"note\": \"bandwidth GB\"\n    },\n    {\n      \"sku\": \"SKU-77219\",\n      \"qty\": 2,\n      \"unit_price\": 0.06,\n      \"note\": \"snapshot\"\n    }\n  ],\n  \"total\": 34.89\n}\n```",
+      "```json\n{\n  \"records\": [\n    {\n      \"sku\": \"SKU-01044\",\n      \"qty\": 3,\n      \"unit_price\": 10.00,\n      \"note\": \"block storage\"\n    },\n    {\n      \"sku\": \"SKU-90210\",\n      \"qty\": 1,\n      \"unit_price\": 4.41,\n      \"note\": \"H100 hour\"\n    },\n    {\n      \"sku\": \"SKU-33127\",\n      \"qty\": 12,\n      \"unit_price\": 0.01,\n      \"note\": \"bandwidth GB\"\n    },\n    {\n      \"sku\": \"SKU-77219\",\n      \"qty\": 2,\n      \"unit_price\": 0.06,\n      \"note\": \"snapshot\"\n    }\n  ],\n  \"total\": 38.53\n}\n```",
+      "```json\n{\n  \"records\": [\n    {\n      \"sku\": \"SKU-01044\",\n      \"qty\": 3,\n      \"unit_price\": 10.00,\n      \"note\": \"block storage\"\n    },\n    {\n      \"sku\": \"SKU-90210\",\n      \"qty\": 1,\n      \"unit_price\": 4.41,\n      \"note\": \"H100 hour\"\n    },\n    {\n      \"sku\": \"SKU-33127\",\n      \"qty\": 12,\n      \"unit_price\": 0.01,\n      \"note\": \"bandwidth GB\"\n    },\n    {\n      \"sku\": \"SKU-77219\",\n      \"qty\": 2,\n      \"unit_price\": 0.06,\n      \"note\": \"snapshot\"\n    }\n  ],\n  \"total\": 34.87\n}\n```",
+      "```json\n{\n  \"records\": [\n    {\n      \"sku\": \"SKU-01044\",\n      \"qty\": 3,\n      \"unit_price\": 10.00,\n      \"note\": \"block storage\"\n    },\n    {\n      \"sku\": \"SKU-90210\",\n      \"qty\": 1,\n      \"unit_price\": 4.41,\n      \"note\": \"H100 hour\"\n    },\n    {\n      \"sku\": \"SKU-33127\",\n      \"qty\": 12,\n      \"unit_price\": 0.01,\n      \"note\": \"bandwidth GB\"\n    },\n    {\n      \"sku\": \"SKU-77219\",\n      \"qty\": 2,\n      \"unit_price\": 0.06,\n      \"note\": \"snapshot\"\n    }\n  ],\n  \"total\": 38.53\n}\n```",
+      "```json\n{\n  \"records\": [\n    {\n      \"sku\": \"SKU-01044\",\n      \"qty\": 3,\n      \"unit_price\": 10.00,\n      \"note\": \"block storage\"\n    },\n    {\n      \"sku\": \"SKU-90210\",\n      \"qty\": 1,\n      \"unit_price\": 4.41,\n      \"note\": \"H100 hour\"\n    },\n    {\n      \"sku\": \"SKU-33127\",\n      \"qty\": 12,\n      \"unit_price\": 0.01,\n      \"note\": \"bandwidth GB\"\n    },\n    {\n      \"sku\": \"SKU-77219\",\n      \"qty\": 2,\n      \"unit_price\": 0.06,\n      \"note\": \"snapshot\"\n    }\n  ],\n  \"total\": 34.87\n}\n```"
+    ],
+    "mode": "prompt_only",
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "max_tokens": 512
+  }
+]

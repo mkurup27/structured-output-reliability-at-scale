@@ -19,8 +19,10 @@ headroom rather than contention, whatever its concurrency number says.
 """
 
 import argparse
+import gzip
 import json
 import sys
+from pathlib import Path
 
 
 def fmt(v, nd=3, dash="-"):
@@ -58,8 +60,11 @@ ROWS = [
 
 
 def summarize(path, show_specimens=False):
-    with open(path) as f:
+    opener = gzip.open if str(path).endswith(".gz") else open
+    with opener(path, "rt") as f:
         runs = json.load(f)
+    if not isinstance(runs, list) or not runs or "concurrency" not in runs[0]:
+        return
     if not runs:
         print(f"\n### {path}\n\n(empty)")
         return
@@ -170,7 +175,22 @@ def summarize(path, show_specimens=False):
         seen = set()
         print("\nSpecimens (first occurrence per category across levels):")
         for r in runs:
-            for k, v in (r.get("specimens_by_category") or {}).items():
+            specimens = dict(r.get("specimens_by_category") or {})
+            if not specimens:
+                for record in r.get("records") or []:
+                    if record.get("category") == "ok":
+                        continue
+                    key = record.get("category") or "unknown"
+                    if record.get("subcategory"):
+                        key = f"{key}/{record['subcategory']}"
+                    specimens.setdefault(key, {
+                        "task": record.get("task"),
+                        "finish_reason": record.get("finish_reason"),
+                        "http_status": record.get("http_status"),
+                        "error": record.get("error"),
+                        "raw": record.get("specimen"),
+                    })
+            for k, v in specimens.items():
                 if k in seen:
                     continue
                 seen.add(k)
@@ -188,7 +208,17 @@ def main():
     ap.add_argument("--specimens", action="store_true",
                     help="print one real captured output per failure category")
     a = ap.parse_args()
-    for p in a.files:
+    paths = []
+    for value in a.files:
+        p = Path(value)
+        if p.is_dir():
+            paths.extend(sorted(
+                f for f in p.rglob("*")
+                if f.is_file() and (f.suffix == ".json" or f.name.endswith(".json.gz"))
+            ))
+        else:
+            paths.append(p)
+    for p in paths:
         try:
             summarize(p, a.specimens)
         except Exception as e:

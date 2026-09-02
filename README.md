@@ -5,12 +5,12 @@
 - **Self-hosted arm:** vLLM `0.27.1` with `xgrammar 0.2.3` explicitly pinned, on a single H100 80GB GPU Droplet, `max_num_seqs=128`, `--enforce-eager`
 - **Managed arm:** DigitalOcean Serverless Inference, `mistral-3-14B`, strict `json_schema` mode
 - **Models:** `Qwen/Qwen2.5-7B-Instruct` (self-hosted); `mistral-3-14B` (managed)
-- **Volume:** 26,709 requests in the sustained strict ramp alone, concurrency 1 → 400; 132,737 synthetic truncation cut points; 18 schema keywords × 5 trials × 2 grammar backends; a 64 → 2,048 distinct-grammar cardinality ladder
+- **Volume:** 28,246 requests in the sustained strict ramp alone, concurrency 1 → 400; 132,737 synthetic truncation cut points; 18 schema keywords × 5 trials × 2 grammar backends; a 64 → 2,048 distinct-grammar cardinality ladder
 - **Everything in this repository is what actually ran:** the ramp harness, the truncation and cost models, the stage driver, the summarizer, and the plotting code that produced every figure in the article.
 
 This repository is the evidence base for a companion article, *"Structured Output Reliability at Scale: When JSON Schema Validity Breaks Down Under Concurrency"* (DigitalOcean Community, forthcoming).
 
-> **Read this first.** Two things are deliberately absent and one thing is superseded. The backend-conformance probe (`backend_conformance_probe.py`, `compare_conformance.py`, `run_conformance.sh`) is **not yet in this repository** even though the article's keyword-enforcement grid comes from it. The per-run result JSONs are **not published here**. And `scrape_metrics.py`, a standalone `/metrics` poller described in earlier drafts, was folded into the ramp harness as `--metrics-url` and no longer exists separately. See [Known gaps](#known-gaps-in-this-repository).
+> **Read this first.** Two caveats. `plot_figures.py` carries transcribed values instead of reading `results/`, so where a figure and a table disagree, the table is authoritative. And `scrape_metrics.py`, a standalone `/metrics` poller described in earlier drafts, was folded into the ramp harness as `--metrics-url` and no longer exists separately.
 
 ---
 
@@ -20,9 +20,9 @@ Structured-output guidance fixates on whether the model returns valid JSON. This
 
 Constrained decoding guarantees a *prefix* invariant: after every token, the string so far is a valid prefix of some document matching the grammar. That is a strong guarantee about structure and it says nothing about whether generation terminates, whether the values are right, whether your backend enforces the keyword you wrote, or which backend is serving you at all. Five failure modes follow from that gap (truncation, constraint-boundary, semantic, extraction/parser, and contention), and this repository measures all five on real infrastructure. Transport failures are broken out as a sixth bucket outside the taxonomy, because they produce no document to classify.
 
-The headline result is that **concurrency, the thing the folklore blames, splits by where you run it**. On version-pinned self-hosted vLLM, strict-mode schema validity held at 1.00 on every response returned, from concurrency 1 to 400 under sustained load, with 272 requests queued behind a 128-slot batch and p50 latency near ten seconds. The identical request against a managed endpoint slid from 1.00 to roughly 0.85 as concurrency climbed. Contention moved latency by an order of magnitude on the pinned stack and validity not at all.
+The headline result is that **concurrency, the thing the folklore blames, splits by where you run it**. On version-pinned self-hosted vLLM, strict-mode schema validity held at 1.00 on every response returned, from concurrency 1 to 400 under sustained load, with 270 requests queued behind a 128-slot batch and p50 latency near ten seconds. The same schemas and prompts against a managed endpoint slid from 1.00 to roughly 0.85 as concurrency climbed. Contention moved p99 by roughly fivefold on the pinned stack and validity not at all.
 
-What did degrade under load turned out to be the measurement client's own HTTP connection pool, costing 1.33% of requests and 13 seconds of p99 until it was taken out of the path. That is the exact misattribution the taxonomy exists to prevent, occurring inside the study's own instrumentation.
+The only structural-validity misses were dropped HTTP connections from the measurement client's own pool. Disabling connection reuse at concurrency 400 removed them while the queue stayed deep. That is the exact misattribution the taxonomy exists to prevent, occurring inside the study's own instrumentation.
 
 ---
 
@@ -87,8 +87,8 @@ Restarting with `VLLM_XGRAMMAR_CACHE_MB=1`, verified in the process environment 
 
 | | TTFT p50 | e2e p50 | e2e p99 | Per-token decode | Schema valid |
 |---|---|---|---|---|---|
-| **Default cache** | 0.489 s | 2.783 s | 4.500 s | 24.3 ms | **1.0000** |
-| **1 MiB cache** | 1.229 s | 6.007 s | 10.057 s | 50.9 ms | **1.0000** |
+| **Default cache** | 0.489 s | 2.783 s | 4.500 s | 24.4 ms | **1.0000** |
+| **1 MiB cache** | 1.229 s | 6.007 s | 10.057 s | 50.7 ms | **1.0000** |
 
 ![Grammar cache and cardinality](figures/grammar-cache-cardinality.png)
 
@@ -96,27 +96,27 @@ Under sustained load at concurrency 400 the reduced cache completed 1,609 reques
 
 Every rung of the validation ladder reports success while this is happening. The symptom that does show up, slow generation, is the one people attribute to the model or the GPU.
 
-### 6. On a pinned stack, concurrency moves latency by an order of magnitude and validity not at all
+### 6. On a pinned stack, concurrency moves p99 by roughly fivefold and validity not at all
 
 ![Schema validity against concurrency, all four arms](figures/validity-vs-concurrency.png)
 
 | Concurrency | Requests | Schema valid | Truncation | Queued (max) | Preemptions | p50 (s) | p99 (s) |
 |---|---|---|---|---|---|---|---|
-| 1 | 104 | **1.00** | 0.00 | 0 | 0 | 2.067 | 2.255 |
-| 100 | 6,908 | 0.9991 | 0.00 | 0 | 0 | 2.807 | 3.960 |
-| 200 | 7,885 | 0.9985 | 0.00 | **68** | 0 | 4.947 | 6.650 |
-| 400 | 6,668 | 0.9867 | 0.00 | **272** | 0 | 9.987 | 23.567 |
+| 1 | 104 | **1.00** | 0.00 | 0 | 0 | 2.080 | 2.232 |
+| 100 | 6,837 | 0.9994 | 0.00 | 0 | 0 | 2.830 | 3.884 |
+| 200 | 7,939 | 0.9984 | 0.00 | **72** | 0 | 4.881 | 7.404 |
+| 400 | 8,124 | 0.9991 | 0.00 | **270** | 0 | 9.386 | 11.279 |
 
 Every sub-1.00 entry is a dropped HTTP connection rather than a schema failure. Re-running concurrency 400 with connection reuse disabled and nothing else changed:
 
 | | Requests | Schema valid | Transport failures | Queued (max) | p50 (s) | p99 (s) |
 |---|---|---|---|---|---|---|
-| Pooled connections | 6,668 | 0.9867 | 89 | 272 | 9.987 | 23.567 |
+| Pooled connections | 8,124 | 0.9991 | 7 | 270 | 9.386 | 11.279 |
 | **Pooling disabled** | 8,181 | **1.0000** | **0** | 266 | 9.410 | **10.561** |
 
 ![Latency and queue depth against concurrency](figures/latency-vs-validity-sustained.png)
 
-The queue is still 266 deep, so this is the same contention with the client's pool out of the path. **Strict-mode validity at concurrency 400 under sustained load, with a real queue, is 1.00 with no asterisk.** The pool also cost 13 seconds of p99 and 23% of throughput. Before concluding that load broke your constrained decoding, check your client.
+The queue is still 266 deep against 270 in the pooled run, so this is the same contention with the client's pool out of the path. **Strict-mode validity at concurrency 400 under sustained load, with a real queue, is 1.00 with no asterisk.** Before concluding that load broke your constrained decoding, check your client.
 
 ### 7. Enforcement is close to free on an idle server and costs about a third of per-token time under load
 
@@ -175,16 +175,20 @@ Schema validity, semantic validity against ground truth, truncation by terminati
 
 ```bash
 harness/          Measurement code. Everything that talks to a server.
-  validity_ramp_harness_v4.py   The concurrency ramp. Every ramp result comes from this.
-  validity_ramp_harness.py      v1, the original burst ramp. Kept for provenance.
+  validity_ramp_harness_v4.py   The current concurrency harness and source of the instrumented ramps.
+  validity_ramp_harness_managed.py  Kept because the published managed-endpoint arm ran on it.
+  validity_ramp_harness_burst.py    Kept because the published burst ramp ran on it.
+  backend_conformance_probe.py  The 18-keyword enforcement probe, one backend per run.
+  run_conformance.sh            Drives the probe across backends.
   truncation_experiment.py      Cut-point recoverability + validation-ladder benchmark. Offline.
   cost_of_failure.py            Modelled cost-per-valid-output arithmetic. Offline.
   run_gap_closure.sh            Stage driver. Runs every arm the article reports, in order.
 analysis/         Turns result files into tables and figures.
   summarize_runs.py             Result JSONs -> the article's tables + a contention verdict.
+  compare_conformance.py        Probe output -> the keyword-enforcement grid.
   plot_figures.py               All six article figures. Takes no input files.
 figures/          The six figures, as published.
-results/          Where run output lands. Empty in this repository; see its README.
+results/          Every published run, including per-request records. See its README.
 ```
 
 Each directory has its own README with per-script detail, flags, and the cautions specific to it.
@@ -226,7 +230,7 @@ export BASE_URL=http://SERVER:8000/v1 API_KEY=EMPTY
 export METRICS=http://SERVER:8000/metrics
 
 STAGES=all bash harness/run_gap_closure.sh
-python3 analysis/summarize_runs.py results/*.json
+python3 analysis/summarize_runs.py results
 ```
 
 `STAGES` selects arms so a single one can be re-run without redoing an hour of finished work:
@@ -249,23 +253,30 @@ python3 analysis/summarize_runs.py results/*.json
 VLLM_XGRAMMAR_CACHE_MB=1 vllm serve Qwen/Qwen2.5-7B-Instruct \
   --structured-outputs-config.backend xgrammar --max-num-seqs 128 --enforce-eager
 
+# Run this verification on the Linux serving host.
 tr '\0' '\n' < /proc/$(pgrep -f '[v]llm serve' | head -1)/environ | grep XGRAMMAR
+
+# On the client host:
+XGRAMMAR_CACHE_MB=1 STAGES=8 OUT=results/cardinality/cache-1mib \
+  bash harness/run_gap_closure.sh
 ```
 
 An exported variable left over from a previous shell is exactly how a run ends up mislabelled. Without the return-to-default control, the restart is an alternative explanation for everything the reduced-cache arm shows.
 
+### The backend-conformance grid
+
+Findings 1 and 2 come from a separate probe, not from the ramp, because the backend is a server-level setting and each one needs its own server:
+
+```bash
+MODEL=Qwen/Qwen2.5-7B-Instruct bash harness/run_conformance.sh
+python3 analysis/compare_conformance.py results/conformance/conformance_{xgrammar,guidance}.json
+```
+
+That reproduces the published 18-keyword grid exactly. Pass all four probe files instead and the comparison refuses to print, on purpose: `outlines` and `lm-format-enforcer` returned HTTP 500 on every request on this install, and a backend that fails the `enum` control isn't measuring the other keywords either. See `harness/README.md` for the manual path, which is more reliable than letting a script manage servers.
+
 If you'd rather not hand-install vLLM, DigitalOcean's [vLLM 1-Click Model](https://docs.digitalocean.com/products/marketplace/catalog/vllm/) deploys it on a GPU Droplet with no additional setup. You still need to pin the structured-output backend yourself once it's up.
 
 ---
-
-## Known gaps in this repository
-
-- **The backend-conformance probe is missing.** `backend_conformance_probe.py`, `compare_conformance.py` and `run_conformance.sh` produced the 18-keyword × 2-backend enforcement grid in finding 2, and they are not in this repository. The grid and the figure are reproduced here from recorded values; the code that generated them is not yet published. This is the single largest gap.
-- **No result data is published.** `results/` is empty. Per-request outputs and server logs were **not retained** for the earliest vLLM ramp, so its tables can be reproduced from the harness but not replayed from that run. Later runs did retain records (`--dump-records`), but those files are not included here.
-- **`plot_figures.py` takes no input files.** The per-arm numbers are written into the script, so it renders rather than analyses. Where a figure and a table disagree, the table is authoritative.
-- **`scrape_metrics.py` no longer exists.** Earlier drafts described a standalone `/metrics` poller. It was folded into the ramp harness as `--metrics-url` / `--metrics-interval`.
-- **`validity_ramp_harness_v2.py` and `v3.py` are not included.** v1 is kept for provenance because the published burst ramp ran on it; v2 and v3 were intermediate and are fully superseded by v4.
-- **`run_gap_closure.sh` was modified for this repository** to resolve the harness relative to its own location instead of the working directory, so the driver works from a split layout. Path plumbing only; no arm changed.
 
 ## Limitations of the study itself
 
@@ -281,10 +292,7 @@ If you'd rather not hand-install vLLM, DigitalOcean's [vLLM 1-Click Model](https
 
 ## Citation
 
-```bash
-Structured Output Reliability at Scale: When JSON Schema Validity Breaks Down Under Concurrency (2026).
-https://github.com/mkurup27/structured-output-failure-modes
-```
+> Structured Output Reliability at Scale: When JSON Schema Validity Breaks Down Under Concurrency (2026). https://github.com/mkurup27/structured-output-failure-modes
 
 ## License
 

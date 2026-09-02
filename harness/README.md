@@ -1,13 +1,14 @@
 # harness/ — the measurement code
 
-Everything in this directory produces data. Two scripts need no server and finish in seconds; two need a live OpenAI-compatible endpoint; one is the driver that runs the others in the right order.
+Everything in this directory produces data. Two scripts run offline; the ramp and conformance tools need a live OpenAI-compatible endpoint; the driver runs the current instrumented arms in stage order.
 
 | Script | Needs a server | Runtime | Produces |
 |---|---|---|---|
 | `truncation_experiment.py` | no | ~6 s | Cut-point recoverability table, validation-ladder timings |
 | `cost_of_failure.py` | no | instant | Modelled cost per valid output, retry amplification, cache-cardinality table |
-| `validity_ramp_harness_v4.py` | **yes** | minutes to hours | Every ramp result in the article |
-| `validity_ramp_harness.py` | **yes** | minutes | v1, kept for provenance only |
+| `validity_ramp_harness_v4.py` | **yes** | minutes to hours | The sustained, streaming, follow-up, agent and cardinality ramps |
+| `validity_ramp_harness_burst.py` | **yes** | minutes | The burst arm, kept for provenance only |
+| `validity_ramp_harness_managed.py` | **yes** | minutes | The managed-endpoint arm, kept for provenance only |
 | `run_gap_closure.sh` | **yes** | ~1 hour for `all` | Runs every arm, in order, into `../results/` |
 
 ```bash
@@ -46,12 +47,12 @@ Its central caveat: it assumes one retry recovers a failure. That is false for d
 
 ## `validity_ramp_harness_v4.py` — the ramp
 
-Points at any OpenAI-compatible endpoint and measures schema validity as a function of offered load. Every ramp number in the article comes from this file.
+Points at any OpenAI-compatible endpoint and measures schema validity as a function of offered load. It produced the instrumented ramps; the historical burst and managed arms retain their original harnesses below.
 
 ```bash
 export BASE_URL=http://localhost:8000/v1 API_KEY=EMPTY
 
-# the published burst ramp
+# the historical burst configuration on the current harness
 python3 validity_ramp_harness_v4.py --model Qwen/Qwen2.5-7B-Instruct \
   --mode strict --levels 1,10,50,100 --requests-per-level 200
 
@@ -81,7 +82,7 @@ The distinction decides what a result means. Two hundred requests at concurrency
 
 | `--taskset` | What it is |
 |---|---|
-| `default` | The three single-turn templates the published ramp used. Verified identical in content and order to the v3 file that produced the published arms, so per-level rates are comparable across versions. |
+| `default` | The three single-turn templates the published burst ramp used. Verified identical in content and order to `validity_ramp_harness_burst.py`, so per-level rates are comparable across versions. |
 | `four` | Adds `enum_triage`. **Changes every denominator.** |
 | `edge` | Three schemas at xgrammar's enforcement boundary: an untyped `pattern` fragment, a `multipleOf` integer, and a typed-`string` control. |
 | `multiturn` | Tool-call turn, synthetic tool result spliced into the transcript, second constrained turn. Intermediate turn validated separately. |
@@ -106,15 +107,37 @@ The distinction decides what a result means. Two hundred requests at concurrency
 
 Also record the *resolved* structured-output backend rather than the one you requested. See the driver's notes on `auto`.
 
-## `validity_ramp_harness.py` — v1, provenance only
+## `validity_ramp_harness_burst.py` — the burst arm, provenance only
 
-The original burst ramp: three single-turn templates, fixed count, no instrumentation. Kept because the published burst arms ran on it. **Use v4 for everything.** Every v1 flag exists in v4 with the same name and default, so an old command line runs unchanged.
+The original burst ramp: three single-turn templates, fixed count, no instrumentation. Kept because the published burst arms ran on it. **Use v4 for everything.** Every flag it carries exists in v4 with the same name and default, so an old command line runs unchanged.
 
-v2 (which added `--taskset`, `--temperature`/`--seed`) and v3 (which added streaming TTFT) are not included; both are fully superseded and v4 is a single-file consolidation rather than a patch series.
+`validity_ramp_harness_managed.py` added `--taskset` and `--temperature`/`--seed`, and it's here because the published managed-endpoint arm ran on it. That arm therefore carries no TTFT, no `server_metrics` and no per-request records. v4 is a single-file consolidation of the series rather than a patch on it, and it's what you should use.
+
+## `backend_conformance_probe.py` — is the keyword actually enforced?
+
+Produces the article's 18-keyword enforcement grid. For each keyword it submits a schema plus a prompt that demands a violating value, five trials by default, and records whether the decoder actually prevented the violation. Declared support and enforced support are different things, and this measures the second one.
+
+One backend per run, because the backend is a server-level setting:
+
+```bash
+vllm serve Qwen/Qwen2.5-7B-Instruct \
+  --structured-outputs-config.backend xgrammar --enforce-eager
+
+python3 backend_conformance_probe.py --model Qwen/Qwen2.5-7B-Instruct \
+  --backend-label xgrammar --out ../results/conformance/conformance_xgrammar.json
+```
+
+`--backend-label` is a label only. It records what you claim the server is running and cannot verify it, so pin the backend on the server and keep the two in step.
+
+Temperature defaults to 1.0 here rather than 0. The probe needs the model to *try* to violate the constraint, and greedy decoding makes a single deterministic attempt look like enforcement.
+
+`run_conformance.sh` repeats the above across `BACKENDS`, managing one server per backend. Its header documents the manual path, which is three commands and more reliable.
+
+Read the results with `../analysis/compare_conformance.py`, which refuses to print a grid if the `enum` control case failed, since a backend that can't enforce `enum` isn't measuring anything. On this study's install `outlines` and `lm-format-enforcer` return HTTP 500 on every request, so the guard fires and the published grid covers `xgrammar` and `guidance` only.
 
 ## `run_gap_closure.sh` — the driver
 
-Runs every arm the article reports, in order, writing to `../results/`.
+Runs the current instrumented arms in stage order, writing to `../results/`. The historical burst and managed artifacts retain their original filenames and harnesses.
 
 ```bash
 ulimit -n 8192          # 400 concurrent connections exceeds the common 1024 default
@@ -124,7 +147,7 @@ export METRICS=http://SERVER:8000/metrics
 STAGES=all bash run_gap_closure.sh
 ```
 
-Environment: `MODEL` (default `Qwen/Qwen2.5-7B-Instruct`), `OUT` (default `../results`), `METRICS` (optional), `STAGES` (default `6,7`), and `DO_BASE_URL` / `DO_API_KEY` / `DO_MODEL` for the managed arm.
+Environment: `MODEL` (default `Qwen/Qwen2.5-7B-Instruct`), `OUT` (default `../results`), `METRICS` (optional), `STAGES` (default `6,7`), `XGRAMMAR_CACHE_MB` for stage 8, and `DO_BASE_URL` / `DO_API_KEY` / `DO_MODEL` for the managed arm.
 
 **`STAGES` defaults to `6,7`, not to everything.** Rounds one and two were months apart in practice, and running the file top to bottom after round one has landed silently redoes about an hour of finished work and overwrites its result files. Stage numbers match the Run numbers in the script, and a stage covers its lettered sub-runs: stage 1 is Runs 1, 1b and 1c.
 
@@ -134,9 +157,9 @@ Environment: `MODEL` (default `Qwen/Qwen2.5-7B-Instruct`), `OUT` (default `../re
 | `2` | TTFT streaming pass, both arms | `r2_*`, `r2b_*` |
 | `3` | Two-turn agent + `agent_mix` relocation | `r3_*`, `r3b_*` |
 | `4` | Tight budget, edge schemas, varying seed | `r4_*`, `r4b_*`, `r4c_*` |
-| `5` | Managed endpoint (needs `DO_BASE_URL`) | managed arm files |
+| `5` | Managed endpoint (needs `DO_BASE_URL`; current v4 format) | `r5_managed_rep1.json`, `r5_managed_rep2.json` |
 | `6` | Five-step agent, both arms | `r6_*`, `r6b_*`, `r6c_*` |
-| `7` | Cardinality ladder, default cache | `r7b_*` |
+| `7` | Cardinality ladder, default cache | `r7_cardinality_*`, `r7b_*` |
 | `8` | Cardinality ladder, **undersized cache** | reduced-cache files |
 | `all` | Everything **except 8** | |
 
@@ -150,6 +173,10 @@ VLLM_XGRAMMAR_CACHE_MB=1 vllm serve Qwen/Qwen2.5-7B-Instruct \
 
 # verify in the process environment, not from the launch command
 tr '\0' '\n' < /proc/$(pgrep -f '[v]llm serve' | head -1)/environ | grep XGRAMMAR
+
+# on the client host
+XGRAMMAR_CACHE_MB=1 STAGES=8 OUT=../results/cardinality/cache-1mib \
+  bash run_gap_closure.sh
 ```
 
 An exported variable left over from a previous shell is exactly how a run ends up mislabelled. Run stage 7 at the default cache first, then restart reduced and run stage 8, then restart at the default and repeat one rung as a control. Without that last step the restart is an alternative explanation for everything the reduced-cache arm shows. Both `pgrep` and the `vllm serve` command run on the **serving** host; everything else runs on the client.
