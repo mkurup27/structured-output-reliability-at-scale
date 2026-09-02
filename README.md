@@ -292,7 +292,7 @@ If you'd rather not hand-install vLLM, DigitalOcean's [vLLM 1-Click Model](https
 
 ## Citation
 
-> Structured Output Reliability at Scale: When JSON Schema Validity Breaks Down Under Concurrency (2026). https://github.com/mkurup27/structured-output-failure-modes
+> Structured Output Reliability at Scale: When JSON Schema Validity Breaks Down Under Concurrency (2026). https://github.com/mkurup27/structured-output-reliability-at-scale
 
 ## License
 
